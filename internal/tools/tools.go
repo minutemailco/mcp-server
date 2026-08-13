@@ -1,4 +1,4 @@
-// Package tools defines the MCP tools exposed by mm-mcp-server. Every tool
+// Package tools defines the MCP tools exposed by mcp-server. Every tool
 // maps 1:1 onto a MinuteMail /v1 API route reachable through the api-gateway.
 package tools
 
@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"strings"
 
-	"mm-mcp-server/internal/gateway"
+	"mcp-server/internal/gateway"
 )
 
 // Tool is a single MCP tool definition plus its handler.

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"mm-mcp-server/internal/gateway"
+	"mcp-server/internal/gateway"
 )
 
 // archivedTools covers /v1/archived-mailboxes (proxied to mm-mailbox-service).

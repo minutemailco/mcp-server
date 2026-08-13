@@ -1,5 +1,5 @@
 # binaries
-mm-mcp-server
+mcp-server
 *.exe
 
 # editor / OS

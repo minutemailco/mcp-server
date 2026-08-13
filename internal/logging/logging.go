@@ -37,7 +37,7 @@ func Setup(level, format string) *slog.Logger {
 		}
 
 		defaultLogger = slog.New(handler).With(
-			"service", "mm-mcp-server",
+			"service", "mcp-server",
 			"pid", os.Getpid(),
 		)
 		slog.SetDefault(defaultLogger)

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"mm-mcp-server/internal/gateway"
+	"mcp-server/internal/gateway"
 )
 
 // TestUniqueToolNames guards against accidental duplicate registrations.

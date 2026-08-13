@@ -18,7 +18,7 @@ RUN echo 'appuser:x:1000:1000::/nonexistent:/usr/sbin/nologin' > /passwd && \
 
 # Build a statically linked binary (CGO disabled — pure stdlib).
 # Do NOT hardcode GOARCH — buildx sets it automatically for multi-arch builds.
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /out/mm-mcp-server .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /out/mcp-server .
 
 # ===========================================
 # Runtime stage
@@ -32,7 +32,7 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifi
 COPY --from=builder /passwd /etc/passwd
 
 # Copy the compiled binary.
-COPY --from=builder /out/mm-mcp-server /app/mm-mcp-server
+COPY --from=builder /out/mcp-server /app/mcp-server
 
 USER 1000:1000
 
@@ -40,4 +40,4 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/mm-mcp-server"]
+ENTRYPOINT ["/app/mcp-server"]

@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"mm-mcp-server/internal/config"
-	"mm-mcp-server/internal/gateway"
-	"mm-mcp-server/internal/logging"
-	"mm-mcp-server/internal/mcp"
-	"mm-mcp-server/internal/tools"
+	"mcp-server/internal/config"
+	"mcp-server/internal/gateway"
+	"mcp-server/internal/logging"
+	"mcp-server/internal/mcp"
+	"mcp-server/internal/tools"
 )
 
 func main() {

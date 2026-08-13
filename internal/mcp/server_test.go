@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"mm-mcp-server/internal/gateway"
-	"mm-mcp-server/internal/tools"
+	"mcp-server/internal/gateway"
+	"mcp-server/internal/tools"
 )
 
 func newTestServer(gwURL string) *httptest.Server {

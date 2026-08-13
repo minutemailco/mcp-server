@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"strings"
 
-	"mm-mcp-server/internal/gateway"
-	"mm-mcp-server/internal/jsonrpc"
-	"mm-mcp-server/internal/tools"
+	"mcp-server/internal/gateway"
+	"mcp-server/internal/jsonrpc"
+	"mcp-server/internal/tools"
 )
 
 // LatestProtocolRevision is the protocol version this server implements.
@@ -128,7 +128,7 @@ func (s *Server) handleInitialize(req *jsonrpc.Request) *jsonrpc.Response {
 			},
 		},
 		"serverInfo": map[string]any{
-			"name":    "mm-mcp-server",
+			"name":    "mcp-server",
 			"version": "0.1.0",
 		},
 	})

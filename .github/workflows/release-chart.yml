@@ -34,4 +34,4 @@ jobs:
         run: |
           VERSION="0.1.0-dev.${{ github.run_number }}"
           helm package chart/ --version "$VERSION" --app-version develop
-          helm push mm-mcp-server-*.tgz oci://ghcr.io/minutemailco/charts
+          helm push mcp-server-*.tgz oci://ghcr.io/minutemailco/charts

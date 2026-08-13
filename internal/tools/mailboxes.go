@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"mm-mcp-server/internal/gateway"
+	"mcp-server/internal/gateway"
 )
 
 // mailboxTools covers /v1/mailboxes (proxied to mm-mailbox-service).

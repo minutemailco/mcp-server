@@ -1,4 +1,4 @@
-# mm-mcp-server
+# mcp-server
 
 MCP (Model Context Protocol) server exposing the MinuteMail public API as
 tools. It lets AI agents and MCP clients operate MinuteMail mailboxes, emails,
@@ -90,7 +90,7 @@ go run .          # local server on :8080
 ## Deployment (Flux GitOps)
 
 - Image: `ghcr.io/minutemailco/mcp-server:develop` (build.yml, multi-arch)
-- Chart: `mm-mcp-server` → `oci://ghcr.io/minutemailco/charts` (release-chart.yml)
-- HelmRelease: `flux-repo/apps/mm-mcp-server` (namespace `minutemail`)
+- Chart: `mcp-server` → `oci://ghcr.io/minutemailco/charts` (release-chart.yml)
+- HelmRelease: `flux-repo/apps/mcp-server` (namespace `minutemail`)
 - Ingress: `dev.mcp.minutemail.co` (Traefik, TLS `mcp-dev-tls` via cert-manager)
 - Calls the gateway internally at `http://mm-api-gateway:80` — no ingress hop.
