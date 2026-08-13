@@ -1,0 +1,6 @@
+apiVersion: v2
+name: mm-mcp-server
+description: MinuteMail MCP server - Model Context Protocol tools over the MinuteMail public API
+type: application
+version: 0.1.0
+appVersion: "develop"

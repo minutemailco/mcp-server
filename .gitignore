@@ -1,0 +1,8 @@
+# binaries
+mm-mcp-server
+*.exe
+
+# editor / OS
+.idea/
+.vscode/
+.DS_Store

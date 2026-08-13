@@ -1,0 +1,59 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/minutemailco/mcp-server
+  pullPolicy: Always
+  tag: develop
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+nameOverride: ""
+fullnameOverride: ""
+
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+env:
+  PROFILE: prod
+  LOG_LEVEL: info
+  LOG_FORMAT: json
+  API_BASE: http://mm-api-gateway:80
+
+secretEnv: {}
+
+ingress:
+  enabled: false
+  className: traefik
+  hosts:
+    - host: dev.mcp.minutemail.co
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - dev.mcp.minutemail.co
+      secretName: mcp-dev-tls
+
+probes:
+  readiness:
+    path: /health
+    initialDelaySeconds: 5
+  liveness:
+    path: /health
+    initialDelaySeconds: 10
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
