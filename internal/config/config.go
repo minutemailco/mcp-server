@@ -26,7 +26,7 @@ func Load() *Config {
 		LogLevel:  getEnv("LOG_LEVEL", "warn"),
 		LogFormat: getEnv("LOG_FORMAT", "json"),
 		Port:      getEnv("PORT", "8080"),
-		APIBase:   strings.TrimRight(getEnv("API_BASE", "http://mm-api-gateway:80"), "/"),
+		APIBase:   strings.TrimRight(getEnv("API_BASE", "http://api-gateway:80"), "/"),
 	}
 
 	slog.Default().Debug("loaded config",

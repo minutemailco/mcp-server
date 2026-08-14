@@ -25,7 +25,7 @@ env:
   PROFILE: prod
   LOG_LEVEL: info
   LOG_FORMAT: json
-  API_BASE: http://mm-api-gateway:80
+  API_BASE: http://api-gateway:80
 
 secretEnv: {}
 
