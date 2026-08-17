@@ -49,7 +49,8 @@ Bearer API key; write operations require the matching scope
 ### Not exposed
 - `/v1/api-keys` CRUD — exempt from API-key auth (web-gateway internal plane,
   trusts `X-Internal-Tenant-Id`); manage keys from the web app instead.
-- `/internal/*`, `/metrics` — internal-only.
+- `/internal/*` — internal-only. `/metrics` serves Prometheus metrics
+  (runtime `go_*`/`process_*` counters) for scraping; see METRICS.md.
 
 ## Example
 
@@ -78,8 +79,8 @@ remaining count, 502 upstream down).
 
 ## Development
 
-Go 1.22, stdlib only (no dependencies). Follows the MinuteMail service
-standards (see mm-mailbox-service).
+Go 1.23. Stdlib plus `prometheus/client_golang` for `/metrics`. Follows the
+MinuteMail service standards (see mm-mailbox-service).
 
 ```bash
 go test ./...     # unit tests

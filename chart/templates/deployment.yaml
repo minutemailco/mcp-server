@@ -14,6 +14,11 @@ spec:
       annotations:
         rollme: {{ .Values.image.tag | quote }}
         reloader.stakater.com/auto: "true"
+        {{- if .Values.metrics.annotations.enabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.service.targetPort | quote }}
+        prometheus.io/path: "/metrics"
+        {{- end }}
       labels:
         {{- include "chart.selectorLabels" . | nindent 8 }}
     spec:

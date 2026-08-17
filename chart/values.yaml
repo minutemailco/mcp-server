@@ -50,6 +50,10 @@ probes:
     path: /health
     initialDelaySeconds: 10
 
+metrics:
+  annotations:
+    enabled: true
+
 resources:
   requests:
     cpu: 50m

@@ -1,12 +1,12 @@
 # ===========================================
 # Build stage
 # ===========================================
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /src
 
-# Copy go.mod first for dependency caching (no go.sum needed — zero dependencies).
-COPY go.mod ./
+# Copy go.mod/go.sum first for dependency caching.
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the full project.
@@ -16,7 +16,7 @@ COPY . .
 RUN echo 'appuser:x:1000:1000::/nonexistent:/usr/sbin/nologin' > /passwd && \
     echo 'appgroup:x:1000:' >> /passwd
 
-# Build a statically linked binary (CGO disabled — pure stdlib).
+# Build a statically linked binary (CGO disabled).
 # Do NOT hardcode GOARCH — buildx sets it automatically for multi-arch builds.
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /out/mcp-server .
 

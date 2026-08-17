@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"mcp-server/internal/gateway"
 	"mcp-server/internal/jsonrpc"
 	"mcp-server/internal/tools"
@@ -35,10 +37,11 @@ func New(registry *tools.Registry, gw *gateway.Client) *Server {
 	return &Server{registry: registry, gateway: gw}
 }
 
-// Handler returns the HTTP handler with /mcp plus health endpoints.
+// Handler returns the HTTP handler with /mcp, /metrics and health endpoints.
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/mcp", s.handleMCP)
+	mux.Handle("GET /metrics", promhttp.Handler())
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/ready", handleHealth)
 	return mux

@@ -209,6 +209,21 @@ func TestToolsCallUnknownTool(t *testing.T) {
 	}
 }
 
+func TestMetrics(t *testing.T) {
+	srv := newTestServer("http://127.0.0.1:1")
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/metrics")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	data, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != 200 || !bytes.Contains(data, []byte("go_goroutines")) {
+		t.Fatalf("metrics = %d %s", resp.StatusCode, data)
+	}
+}
+
 func TestHealth(t *testing.T) {
 	srv := newTestServer("http://127.0.0.1:1")
 	defer srv.Close()
