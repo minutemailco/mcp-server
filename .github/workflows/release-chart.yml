@@ -1,37 +1,65 @@
-name: release-chart
+name: Release Helm Chart
 
 on:
   push:
-    branches: [develop]
+    branches: [main, develop]
+    paths:
+      - 'chart/**'
+      - '.github/workflows/release-chart.yml'
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [main, develop]
     paths:
       - 'chart/**'
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
-  release:
+  release-chart:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Install Helm
-        uses: azure/setup-helm@v4
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to GitHub Container Registry
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lint chart
-        run: helm lint chart/
+    - name: Set chart version for develop branch (dev build)
+      if: github.ref == 'refs/heads/develop'
+      run: |
+        BASE_VERSION=$(yq '.version' chart/Chart.yaml)
+        DEV_VERSION="${BASE_VERSION}-dev.${{ github.run_number }}"
+        sed -i "s/^version: .*/version: ${DEV_VERSION}/" chart/Chart.yaml
+        echo "Chart version set to ${DEV_VERSION} for develop branch"
 
-      - name: Package and push chart
-        run: |
-          VERSION="0.1.0-dev.${{ github.run_number }}"
-          helm package chart/ --version "$VERSION" --app-version develop
-          helm push mcp-server-*.tgz oci://ghcr.io/minutemailco/charts
+    - name: Set chart version and appVersion on tag
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        TAG="${GITHUB_REF#refs/tags/v}"
+        sed -i "s/^version: .*/version: ${TAG}/" chart/Chart.yaml
+        sed -i "s/^appVersion: .*/appVersion: \"${TAG}\"/" chart/Chart.yaml
+        echo "Chart version and appVersion set to ${TAG}"
+
+    - name: Lint chart
+      run: helm lint chart/
+
+    - name: Package chart
+      run: |
+        helm package chart/ --destination .cr-release-packages
+
+    - name: Publish chart to GHCR
+      if: github.event_name != 'pull_request'
+      run: |
+        for pkg in .cr-release-packages/*.tgz; do
+          helm push "$pkg" oci://ghcr.io/minutemailco/charts
+        done
