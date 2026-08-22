@@ -119,8 +119,8 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_send_mail",
-			Description: "Inject a test email into a mailbox (multipart upload). Use this to simulate inbound mail for flow testing.",
+			Name:        "mm_inject_test_mail",
+			Description: "Inject a simulated inbound email into a mailbox (multipart upload). No external mail is sent; use this to simulate inbound mail for flow testing.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
 				"sender":    str("Sender email address"),
@@ -260,7 +260,7 @@ func mailboxTools() []Tool {
 		},
 		{
 			Name:        "mm_add_attachment",
-			Description: "Attach a file to an email (base64 payload).",
+			Description: "Attach a file to a test-injected email (base64 payload).",
 			InputSchema: schema(map[string]any{
 				"mailboxId":   str("Mailbox ID"),
 				"mailId":      str("Mail ID"),
