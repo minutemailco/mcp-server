@@ -23,6 +23,22 @@ func TestUniqueToolNames(t *testing.T) {
 	}
 }
 
+// TestInjectToolNaming pins the injection tool's name: it simulates inbound
+// mail for testing and must not read as sending external mail.
+func TestInjectToolNaming(t *testing.T) {
+	reg := NewRegistry()
+	have := map[string]bool{}
+	for _, tool := range reg.All() {
+		have[tool.Name] = true
+	}
+	if !have["mm_inject_test_mail"] {
+		t.Fatal("expected tool mm_inject_test_mail to be registered")
+	}
+	if have["mm_send_mail"] {
+		t.Fatal("misleading name mm_send_mail must not be registered")
+	}
+}
+
 // TestSchemasAreValidObjects checks the structural invariants MCP clients
 // expect from an inputSchema.
 func TestSchemasAreValidObjects(t *testing.T) {

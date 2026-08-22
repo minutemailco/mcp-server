@@ -26,7 +26,7 @@ Bearer API key; write operations require the matching scope
 | `mm_create_mailbox` | `POST /v1/mailboxes` (owner forced to key owner, domain defaults to tenant default) |
 | `mm_get_mailbox` / `mm_delete_mailbox` | `GET` / `DELETE /v1/mailboxes/{id}` |
 | `mm_bulk_delete_mailboxes` | `DELETE /v1/mailboxes` |
-| `mm_list_mails` / `mm_send_mail` | `GET` / `POST /v1/mailboxes/{id}/mails` (multipart) |
+| `mm_list_mails` / `mm_inject_test_mail` | `GET` / `POST /v1/mailboxes/{id}/mails` (multipart) |
 | `mm_get_mail` / `mm_delete_mail` / `mm_bulk_delete_mails` | `…/mails/{mailId}` |
 | `mm_list_attachments` / `mm_add_attachment` / `mm_get_attachment` / `mm_delete_attachment` / `mm_bulk_delete_attachments` | `…/attachments` |
 
