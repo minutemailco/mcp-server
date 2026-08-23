@@ -5,7 +5,7 @@ tools. It lets AI agents and MCP clients operate MinuteMail mailboxes, emails,
 attachments, domains, teams, and mock OAuth identities through the
 `mm-api-gateway`.
 
-- **Endpoint:** `https://dev.mcp.minutemail.co/mcp` (Streamable HTTP,
+- **Endpoint:** `https://mcp.minutemail.co/mcp` (Streamable HTTP,
   protocol revision `2025-06-18`)
 - **Auth:** the MCP client's `Authorization: Bearer mmak_...` header is
   forwarded verbatim to the api-gateway — this server holds **no credentials**.
@@ -55,7 +55,7 @@ Bearer API key; write operations require the matching scope
 ## Example
 
 ```bash
-curl -s https://dev.mcp.minutemail.co/mcp \
+curl -s https://mcp.minutemail.co/mcp \
   -H 'Authorization: Bearer mmak_XXXXXXXX' \
   -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call",

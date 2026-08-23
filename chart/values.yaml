@@ -33,14 +33,14 @@ ingress:
   enabled: false
   className: traefik
   hosts:
-    - host: dev.mcp.minutemail.co
+    - host: mcp.minutemail.co
       paths:
         - path: /
           pathType: Prefix
   tls:
     - hosts:
-        - dev.mcp.minutemail.co
-      secretName: mcp-dev-tls
+        - mcp.minutemail.co
+      secretName: mcp-tls
 
 probes:
   readiness:
