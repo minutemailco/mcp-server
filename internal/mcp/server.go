@@ -14,6 +14,7 @@ import (
 
 	"mcp-server/internal/gateway"
 	"mcp-server/internal/jsonrpc"
+	"mcp-server/internal/metrics"
 	"mcp-server/internal/tools"
 )
 
@@ -167,12 +168,14 @@ func (s *Server) handleToolsCall(r *http.Request, req *jsonrpc.Request) *jsonrpc
 	var args map[string]any
 	if len(params.Arguments) > 0 {
 		if err := json.Unmarshal(params.Arguments, &args); err != nil {
+			metrics.ToolCallsTotal.WithLabelValues(tool.Name, metrics.ResultError).Inc()
 			return jsonrpc.NewError(req.ID, jsonrpc.CodeInvalidParams, "arguments must be a JSON object: "+err.Error())
 		}
 	}
 
 	bearer := bearerFromRequest(r)
 	if bearer == "" {
+		metrics.ToolCallsTotal.WithLabelValues(tool.Name, metrics.ResultError).Inc()
 		return toolErrorResult(req.ID, "missing Authorization header: send \"Authorization: Bearer <mmak_...>\" with your MinuteMail API key")
 	}
 
@@ -180,6 +183,7 @@ func (s *Server) handleToolsCall(r *http.Request, req *jsonrpc.Request) *jsonrpc
 	if err != nil {
 		// Handler errors are either invalid tool arguments or gateway
 		// transport failures; distinguish by code.
+		metrics.ToolCallsTotal.WithLabelValues(tool.Name, metrics.ResultError).Inc()
 		code := jsonrpc.CodeInvalidParams
 		var upstream *tools.UpstreamError
 		if errors.As(err, &upstream) {
@@ -188,6 +192,13 @@ func (s *Server) handleToolsCall(r *http.Request, req *jsonrpc.Request) *jsonrpc
 		return jsonrpc.NewError(req.ID, code, err.Error())
 	}
 
+	// Anything non-success (isError results from non-2xx gateway responses)
+	// counts as an error.
+	callResult := metrics.ResultSuccess
+	if result.IsError {
+		callResult = metrics.ResultError
+	}
+	metrics.ToolCallsTotal.WithLabelValues(tool.Name, callResult).Inc()
 	return jsonrpc.NewResult(req.ID, map[string]any{
 		"content": []map[string]any{
 			{"type": "text", "text": result.Text},

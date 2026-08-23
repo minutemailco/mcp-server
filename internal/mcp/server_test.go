@@ -9,7 +9,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/prometheus/client_golang/prometheus/testutil"
+
 	"mcp-server/internal/gateway"
+	"mcp-server/internal/metrics"
 	"mcp-server/internal/tools"
 )
 
@@ -236,5 +239,38 @@ func TestHealth(t *testing.T) {
 	data, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 || !bytes.Contains(data, []byte("ok")) {
 		t.Fatalf("health = %d %s", resp.StatusCode, data)
+	}
+}
+
+func TestToolsCallMetricsIncrement(t *testing.T) {
+	gw := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		_, _ = w.Write([]byte(`{"items":[]}`))
+	}))
+	defer gw.Close()
+
+	srv := newTestServer(gw.URL)
+	defer srv.Close()
+
+	successBefore := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultSuccess))
+	errorBefore := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultError))
+
+	_, resp := post(t, srv.URL,
+		`{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"mm_list_mailboxes","arguments":{}}}`,
+		"Bearer mmak_test")
+	if result := resp["result"].(map[string]any); result["isError"] == true {
+		t.Fatalf("unexpected error result: %v", resp)
+	}
+
+	// Missing bearer resolves the tool but ends in an error result.
+	post(t, srv.URL,
+		`{"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"mm_list_mailboxes","arguments":{}}}`,
+		"")
+
+	if got := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultSuccess)) - successBefore; got != 1 {
+		t.Fatalf("success delta = %v, want 1", got)
+	}
+	if got := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultError)) - errorBefore; got != 1 {
+		t.Fatalf("error delta = %v, want 1", got)
 	}
 }
