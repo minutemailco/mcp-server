@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.minutemailco/mcp-server",
+  "title": "MinuteMail",
+  "description": "Ephemeral mailboxes and a mock OAuth IdP for testing email and auth flows — 39 API-driven tools",
+  "version": "1.1.0",
+  "repository": {
+    "url": "https://github.com/minutemailco/mcp-server",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.minutemail.co/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "MinuteMail API key (Bearer mmak_...) — create one at https://minutemail.co",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
