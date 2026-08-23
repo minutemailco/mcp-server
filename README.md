@@ -47,8 +47,8 @@ Bearer API key; write operations require the matching scope
 `mm_get_oauth_client`, `mm_delete_oauth_client`, `mm_rotate_client_secret`.
 
 ### Not exposed
-- `/v1/api-keys` CRUD — exempt from API-key auth (web-gateway internal plane,
-  trusts `X-Internal-Tenant-Id`); manage keys from the web app instead.
+- `/v1/api-keys` CRUD — API-key management is not exposed via MCP; manage
+  keys from the web app instead.
 - `/internal/*` — internal-only. `/metrics` serves Prometheus metrics
   (runtime `go_*`/`process_*` counters) for scraping; see METRICS.md.
 
@@ -87,11 +87,3 @@ go test ./...     # unit tests
 go vet ./...
 go run .          # local server on :8080
 ```
-
-## Deployment (Flux GitOps)
-
-- Image: `ghcr.io/minutemailco/mcp-server:develop` (build.yml, multi-arch)
-- Chart: `mcp-server` → `oci://ghcr.io/minutemailco/charts` (release-chart.yml)
-- HelmRelease: `flux-repo/apps/mcp-server` (namespace `minutemail`)
-- Ingress: `dev.mcp.minutemail.co` (Traefik, TLS `mcp-dev-tls` via cert-manager)
-- Calls the gateway internally at `http://mm-api-gateway:80` — no ingress hop.
