@@ -10,9 +10,11 @@ flows.
 
 - **Endpoint:** `https://mcp.minutemail.co/mcp` (Streamable HTTP, protocol
   revision `2025-06-18`)
-- **Auth:** your MinuteMail API key (`Bearer mmak_...`). The server is
-  stateless and holds **no credentials** — your key is forwarded verbatim to
-  the MinuteMail API, where scopes and quotas are enforced.
+- **Auth:** your MinuteMail API key (`Bearer mmak_...`). The server is a
+  stateless proxy — it holds **no credentials**, sessions, or local storage of
+  its own; your key is forwarded verbatim to the MinuteMail API, where scopes
+  and quotas are enforced. All state (mailboxes, mails, identities) lives in
+  the MinuteMail platform behind it.
 - Also listed in the [official MCP Registry](https://registry.modelcontextprotocol.io)
   as `io.github.minutemailco/mcp-server` and on
   [Smithery](https://smithery.ai/server/minutemailco/minutemail).
@@ -114,7 +116,9 @@ docker run -p 8080:8080 \
 ```
 
 Self-hosting still requires MinuteMail API keys — the server is a stateless
-proxy over the hosted API, not a standalone implementation.
+proxy over the hosted API, not a standalone implementation. It keeps no
+sessions or local data; every mailbox, mail, and identity is stored by the
+MinuteMail API it forwards to.
 
 | Env var | Default | Purpose |
 |---------|---------|-------------|
