@@ -23,7 +23,7 @@ const LatestProtocolRevision = "2025-06-18"
 
 // ServerVersion is reported in the initialize handshake's serverInfo. It
 // mirrors the module version; bump it when tagging a release.
-const ServerVersion = "1.1.1"
+const ServerVersion = "1.1.2"
 
 var supportedRevisions = map[string]bool{
 	"2025-06-18": true,
@@ -155,11 +155,21 @@ func (s *Server) handleToolsList(req *jsonrpc.Request) *jsonrpc.Response {
 	list := s.registry.All()
 	out := make([]map[string]any, 0, len(list))
 	for _, t := range list {
-		out = append(out, map[string]any{
+		entry := map[string]any{
 			"name":        t.Name,
 			"description": t.Description,
 			"inputSchema": t.InputSchema,
-		})
+		}
+		if t.Title != "" {
+			entry["title"] = t.Title
+		}
+		if t.Annotations != nil {
+			entry["annotations"] = t.Annotations
+		}
+		if t.OutputSchema != nil {
+			entry["outputSchema"] = t.OutputSchema
+		}
+		out = append(out, entry)
 	}
 	return jsonrpc.NewResult(req.ID, map[string]any{"tools": out})
 }
