@@ -23,7 +23,7 @@ const LatestProtocolRevision = "2025-06-18"
 
 // ServerVersion is reported in the initialize handshake's serverInfo. It
 // mirrors the module version; bump it when tagging a release.
-const ServerVersion = "1.1.0"
+const ServerVersion = "1.1.1"
 
 var supportedRevisions = map[string]bool{
 	"2025-06-18": true,
