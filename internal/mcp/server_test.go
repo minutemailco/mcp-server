@@ -151,7 +151,7 @@ func TestToolsCallMissingAuth(t *testing.T) {
 	srv := newTestServer(gw.URL)
 	defer srv.Close()
 
-	_, resp := post(t, srv.URL, `{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"mm_list_mailboxes","arguments":{}}}`, "")
+	_, resp := post(t, srv.URL, `{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"mailboxes.list","arguments":{}}}`, "")
 	result := resp["result"].(map[string]any)
 	if result["isError"] != true {
 		t.Fatalf("expected isError result: %v", resp)
@@ -171,7 +171,7 @@ func TestToolsCallProxiesToGateway(t *testing.T) {
 	defer srv.Close()
 
 	_, resp := post(t, srv.URL,
-		`{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"mm_list_mailboxes","arguments":{"address":"a@minutemail.cc"}}}`,
+		`{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"mailboxes.list","arguments":{"address":"a@minutemail.cc"}}}`,
 		"Bearer mmak_test")
 	if gotPath != "/v1/mailboxes" {
 		t.Fatalf("gateway path = %q", gotPath)
@@ -204,7 +204,7 @@ func TestToolsCallGatewayError(t *testing.T) {
 	defer srv.Close()
 
 	_, resp := post(t, srv.URL,
-		`{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"mm_list_mailboxes","arguments":{}}}`,
+		`{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"mailboxes.list","arguments":{}}}`,
 		"Bearer mmak_test")
 	result := resp["result"].(map[string]any)
 	if result["isError"] != true {
@@ -270,11 +270,11 @@ func TestToolsCallMetricsIncrement(t *testing.T) {
 	srv := newTestServer(gw.URL)
 	defer srv.Close()
 
-	successBefore := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultSuccess))
-	errorBefore := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultError))
+	successBefore := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mailboxes.list", metrics.ResultSuccess))
+	errorBefore := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mailboxes.list", metrics.ResultError))
 
 	_, resp := post(t, srv.URL,
-		`{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"mm_list_mailboxes","arguments":{}}}`,
+		`{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"mailboxes.list","arguments":{}}}`,
 		"Bearer mmak_test")
 	if result := resp["result"].(map[string]any); result["isError"] == true {
 		t.Fatalf("unexpected error result: %v", resp)
@@ -282,13 +282,13 @@ func TestToolsCallMetricsIncrement(t *testing.T) {
 
 	// Missing bearer resolves the tool but ends in an error result.
 	post(t, srv.URL,
-		`{"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"mm_list_mailboxes","arguments":{}}}`,
+		`{"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"mailboxes.list","arguments":{}}}`,
 		"")
 
-	if got := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultSuccess)) - successBefore; got != 1 {
+	if got := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mailboxes.list", metrics.ResultSuccess)) - successBefore; got != 1 {
 		t.Fatalf("success delta = %v, want 1", got)
 	}
-	if got := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mm_list_mailboxes", metrics.ResultError)) - errorBefore; got != 1 {
+	if got := testutil.ToFloat64(metrics.ToolCallsTotal.WithLabelValues("mailboxes.list", metrics.ResultError)) - errorBefore; got != 1 {
 		t.Fatalf("error delta = %v, want 1", got)
 	}
 }

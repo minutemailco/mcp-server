@@ -14,14 +14,14 @@ func TestToolCallsTotalNoPrecreatedChildren(t *testing.T) {
 }
 
 func TestToolCallsTotalIncrements(t *testing.T) {
-	ToolCallsTotal.WithLabelValues("mm_list_mailboxes", ResultSuccess).Inc()
-	ToolCallsTotal.WithLabelValues("mm_list_mailboxes", ResultSuccess).Inc()
-	ToolCallsTotal.WithLabelValues("mm_create_mailbox", ResultError).Inc()
+	ToolCallsTotal.WithLabelValues("mailboxes.list", ResultSuccess).Inc()
+	ToolCallsTotal.WithLabelValues("mailboxes.list", ResultSuccess).Inc()
+	ToolCallsTotal.WithLabelValues("mailboxes.create", ResultError).Inc()
 
-	if v := testutil.ToFloat64(ToolCallsTotal.WithLabelValues("mm_list_mailboxes", ResultSuccess)); v != 2 {
-		t.Fatalf("mm_list_mailboxes success = %v, want 2", v)
+	if v := testutil.ToFloat64(ToolCallsTotal.WithLabelValues("mailboxes.list", ResultSuccess)); v != 2 {
+		t.Fatalf("mailboxes.list success = %v, want 2", v)
 	}
-	if v := testutil.ToFloat64(ToolCallsTotal.WithLabelValues("mm_create_mailbox", ResultError)); v != 1 {
-		t.Fatalf("mm_create_mailbox error = %v, want 1", v)
+	if v := testutil.ToFloat64(ToolCallsTotal.WithLabelValues("mailboxes.create", ResultError)); v != 1 {
+		t.Fatalf("mailboxes.create error = %v, want 1", v)
 	}
 }

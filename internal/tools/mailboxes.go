@@ -14,7 +14,7 @@ import (
 func mailboxTools() []Tool {
 	return []Tool{
 		{
-			Name:        "mm_list_mailboxes",
+			Name:        "mailboxes.list",
 			Description: "List the tenant's active mailboxes (owner is derived from the API key). Optionally look up a single mailbox by exact address.",
 			InputSchema: schema(map[string]any{
 				"address": str("Exact mailbox address to look up (e.g. user@minutemail.cc). Optional."),
@@ -28,7 +28,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_create_mailbox",
+			Name:        "mailboxes.create",
 			Description: "Create a new temporary mailbox. The domain defaults to the tenant's default domain; the owner is always the API key's owner.",
 			InputSchema: schema(map[string]any{
 				"domain":       str("Mailbox domain. Defaults to the tenant default domain (e.g. minutemail.cc)."),
@@ -60,7 +60,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_get_mailbox",
+			Name:        "mailboxes.get",
 			Description: "Fetch a single mailbox by ID.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -74,7 +74,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_mailbox",
+			Name:        "mailboxes.delete",
 			Description: "Delete a mailbox and its contents by ID.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -88,7 +88,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_bulk_delete_mailboxes",
+			Name:        "mailboxes.delete_bulk",
 			Description: "Delete several mailboxes at once by ID.",
 			InputSchema: schema(map[string]any{
 				"ids": arr("Mailbox IDs to delete"),
@@ -105,7 +105,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_list_mails",
+			Name:        "mails.list",
 			Description: "List the emails in a mailbox, newest first.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -119,7 +119,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_inject_test_mail",
+			Name:        "mails.inject",
 			Description: "Inject a simulated inbound email into a mailbox (multipart upload). No external mail is sent; use this to simulate inbound mail for flow testing.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -192,7 +192,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_get_mail",
+			Name:        "mails.get",
 			Description: "Fetch a single email by ID, including body and attachment metadata.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -207,7 +207,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_mail",
+			Name:        "mails.delete",
 			Description: "Delete a single email.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -222,7 +222,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_bulk_delete_mails",
+			Name:        "mails.delete_bulk",
 			Description: "Delete several emails of one mailbox at once.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -244,7 +244,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_list_attachments",
+			Name:        "attachments.list",
 			Description: "List the attachments of an email (metadata only).",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
@@ -259,7 +259,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_add_attachment",
+			Name:        "attachments.add",
 			Description: "Attach a file to a test-injected email (base64 payload).",
 			InputSchema: schema(map[string]any{
 				"mailboxId":   str("Mailbox ID"),
@@ -300,7 +300,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_get_attachment",
+			Name:        "attachments.get",
 			Description: "Download an attachment. The file contents are returned base64-encoded in the JSON \"data\" field.",
 			InputSchema: schema(map[string]any{
 				"mailboxId":    str("Mailbox ID"),
@@ -324,7 +324,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_attachment",
+			Name:        "attachments.delete",
 			Description: "Delete a single attachment.",
 			InputSchema: schema(map[string]any{
 				"mailboxId":    str("Mailbox ID"),
@@ -344,7 +344,7 @@ func mailboxTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_bulk_delete_attachments",
+			Name:        "attachments.delete_bulk",
 			Description: "Delete several attachments of one email at once.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Mailbox ID"),
