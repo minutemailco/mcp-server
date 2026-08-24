@@ -42,6 +42,47 @@ claude mcp add --transport http minutemail https://mcp.minutemail.co/mcp \
   --header "Authorization: Bearer mmak_XXXXXXXX"
 ```
 
+**Claude Desktop / clients with an `mcpServers` JSON config** (e.g.
+`claude_desktop_config.json` / `~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "minutemail": {
+      "type": "http",
+      "url": "https://mcp.minutemail.co/mcp",
+      "headers": {
+        "Authorization": "Bearer mmak_XXXXXXXX"
+      }
+    }
+  }
+}
+```
+
+> Some clients (older Claude Desktop builds) only support local `stdio`
+> servers in their JSON config. If yours rejects `type: "http"`, use the
+> built-in remote/connectors UI with the URL and header above, or run
+> [mcp-remote](https://github.com/georgzf/mcp-remote) as a stdio bridge:
+>
+> ```json
+> {
+>   "mcpServers": {
+>     "minutemail": {
+>       "command": "npx",
+>       "args": [
+>         "mcp-remote",
+>         "https://mcp.minutemail.co/mcp",
+>         "--header",
+>         "Authorization: Bearer mmak_XXXXXXXX"
+>       ]
+>     }
+>   }
+> }
+> ```
+
+For a guided walkthrough, see the docs:
+[docs.minutemail.co/mcp/getting-started](https://docs.minutemail.co/mcp/getting-started).
+
 **Raw JSON-RPC (what the clients do under the hood):**
 
 ```bash
