@@ -18,7 +18,12 @@ type Tool struct {
 	Name        string
 	Description string
 	InputSchema map[string]any
-	Handler     Handler
+	// Title, Annotations and OutputSchema are spec metadata filled by
+	// applyMeta from the toolMetaTable.
+	Title        string
+	Annotations  map[string]any
+	OutputSchema map[string]any
+	Handler      Handler
 }
 
 // Handler executes a tool call. arguments is the decoded "arguments" object
@@ -51,6 +56,7 @@ func (r *Registry) Get(name string) (*Tool, bool) {
 // NewRegistry builds the tool registry with every MinuteMail API operation.
 func NewRegistry() *Registry {
 	list := buildTools()
+	applyMeta(list)
 	reg := &Registry{tools: list, byName: make(map[string]*Tool, len(list))}
 	for i := range reg.tools {
 		reg.byName[reg.tools[i].Name] = &reg.tools[i]

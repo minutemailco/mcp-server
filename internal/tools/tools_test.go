@@ -143,3 +143,48 @@ func TestResultFromResponse(t *testing.T) {
 		t.Fatalf("403 result: %+v", r)
 	}
 }
+
+// TestAllToolsHaveMeta ensures every registered tool carries the MCP metadata
+// (title, annotations, outputSchema) that registries and clients expect.
+func TestAllToolsHaveMeta(t *testing.T) {
+	reg := NewRegistry()
+	tools := reg.All()
+	if len(tools) == 0 {
+		t.Fatal("no tools registered")
+	}
+	for _, tool := range tools {
+		if tool.Title == "" {
+			t.Errorf("%s: missing title", tool.Name)
+		}
+		if tool.Annotations == nil {
+			t.Errorf("%s: missing annotations", tool.Name)
+			continue
+		}
+		for _, key := range []string{"title", "readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint"} {
+			if _, ok := tool.Annotations[key]; !ok {
+				t.Errorf("%s: annotations missing %q", tool.Name, key)
+			}
+		}
+		if tool.OutputSchema == nil {
+			t.Errorf("%s: missing outputSchema", tool.Name)
+			continue
+		}
+		if tool.OutputSchema["type"] == nil {
+			t.Errorf("%s: outputSchema has no type", tool.Name)
+		}
+	}
+}
+
+// TestMetaTableCoversAllTools fails on stale entries in toolMetaTable.
+func TestMetaTableCoversAllTools(t *testing.T) {
+	reg := NewRegistry()
+	registered := map[string]bool{}
+	for _, tool := range reg.All() {
+		registered[tool.Name] = true
+	}
+	for name := range toolMetaTable {
+		if !registered[name] {
+			t.Errorf("toolMetaTable has stale entry %q", name)
+		}
+	}
+}
