@@ -7,6 +7,7 @@ flows.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/docker/pulls/chrptvn/minutemail-mcp)](https://hub.docker.com/r/chrptvn/minutemail-mcp)
+[![smithery badge](https://smithery.ai/badge/minutemailco/minutemail)](https://smithery.ai/servers/minutemailco/minutemail)
 
 - **Endpoint:** `https://mcp.minutemail.co/mcp` (Streamable HTTP, protocol
   revision `2025-06-18`)
