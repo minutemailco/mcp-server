@@ -49,7 +49,7 @@ curl -s https://mcp.minutemail.co/mcp \
   -H 'Authorization: Bearer mmak_XXXXXXXX' \
   -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call",
-       "params":{"name":"mm_create_mailbox","arguments":{"expiresIn":30}}}'
+       "params":{"name":"mailboxes.create","arguments":{"expiresIn":30}}}'
 ```
 
 ## Tools (39)
@@ -61,29 +61,29 @@ Bearer API key; write operations require the matching scope (`mailboxes`,
 ### Mailboxes (`mailboxes` scope)
 | Tool | Purpose |
 |---|---|
-| `mm_list_mailboxes` | List active mailboxes (optional exact-address lookup) |
-| `mm_create_mailbox` | Create a mailbox (optional TTL, domain, recovery tag) |
-| `mm_get_mailbox` / `mm_delete_mailbox` | Fetch / delete one mailbox |
-| `mm_bulk_delete_mailboxes` | Delete several mailboxes by ID |
-| `mm_list_mails` / `mm_inject_test_mail` | List mails / simulate an inbound email (multipart, with attachments) |
-| `mm_get_mail` / `mm_delete_mail` / `mm_bulk_delete_mails` | Read / delete mails |
-| `mm_list_attachments` / `mm_add_attachment` / `mm_get_attachment` / `mm_delete_attachment` / `mm_bulk_delete_attachments` | Attachment CRUD |
+| `mailboxes.list` | List active mailboxes (optional exact-address lookup) |
+| `mailboxes.create` | Create a mailbox (optional TTL, domain, recovery tag) |
+| `mailboxes.get` / `mailboxes.delete` | Fetch / delete one mailbox |
+| `mailboxes.delete_bulk` | Delete several mailboxes by ID |
+| `mails.list` / `mails.inject` | List mails / simulate an inbound email (multipart, with attachments) |
+| `mails.get` / `mails.delete` / `mails.delete_bulk` | Read / delete mails |
+| `attachments.list` / `attachments.add` / `attachments.get` / `attachments.delete` / `attachments.delete_bulk` | Attachment CRUD |
 
 ### Archived mailboxes (`mailboxes` scope)
-`mm_list_archived_mailboxes`, `mm_get_archived_mailbox`,
-`mm_delete_archived_mailbox`, `mm_reactivate_archived_mailbox`.
+`archived.list`, `archived.get`,
+`archived.delete`, `archived.reactivate`.
 
 ### Custom domains (`domains` scope)
-`mm_list_domains`, `mm_register_domain`, `mm_verify_domain`, `mm_delete_domain`.
+`domains.list`, `domains.register`, `domains.verify`, `domains.delete`.
 
 ### Team (`team` scope)
-`mm_list_members`, `mm_add_member`, `mm_get_member`, `mm_delete_member`,
-`mm_create_invitation`, `mm_list_invitations`, `mm_delete_invitation`.
+`team.members.list`, `team.members.add`, `team.members.get`, `team.members.delete`,
+`team.invitations.create`, `team.invitations.list`, `team.invitations.delete`.
 
 ### Mock identities & OAuth clients (`identities` scope)
-`mm_list_identities`, `mm_create_identity`, `mm_get_identity`,
-`mm_delete_identity`, `mm_list_oauth_clients`, `mm_create_oauth_client`,
-`mm_get_oauth_client`, `mm_delete_oauth_client`, `mm_rotate_client_secret`.
+`identities.list`, `identities.create`, `identities.get`,
+`identities.delete`, `oauth.clients.list`, `oauth.clients.create`,
+`oauth.clients.get`, `oauth.clients.delete`, `oauth.clients.rotate_secret`.
 
 Tool results are returned as MCP text content carrying the API's JSON
 response. Non-2xx responses become `isError: true` results with the HTTP
@@ -93,11 +93,11 @@ count, 502 upstream down).
 ## Typical agent workflow
 
 ```
-mm_create_mailbox (expiresIn 30)
+mailboxes.create (expiresIn 30)
         ↓
 your app under test sends a verification email to the mailbox address
         ↓
-mm_list_mails → mm_get_mail (extract the code / link)
+mails.list → mails.get (extract the code / link)
         ↓
 assert the flow completed — the mailbox expires on its own
 ```

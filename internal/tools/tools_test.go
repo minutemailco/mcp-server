@@ -2,6 +2,7 @@ package tools
 
 import (
 	"net/http"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -31,8 +32,8 @@ func TestInjectToolNaming(t *testing.T) {
 	for _, tool := range reg.All() {
 		have[tool.Name] = true
 	}
-	if !have["mm_inject_test_mail"] {
-		t.Fatal("expected tool mm_inject_test_mail to be registered")
+	if !have["mails.inject"] {
+		t.Fatal("expected tool mails.inject to be registered")
 	}
 	if have["mm_send_mail"] {
 		t.Fatal("misleading name mm_send_mail must not be registered")
@@ -185,6 +186,25 @@ func TestMetaTableCoversAllTools(t *testing.T) {
 	for name := range toolMetaTable {
 		if !registered[name] {
 			t.Errorf("toolMetaTable has stale entry %q", name)
+		}
+	}
+}
+
+// TestToolNamesUseDotNotation enforces the hierarchical dot-notation naming
+// scheme (e.g. mailboxes.list, team.members.add): 2-3 dot-separated
+// lower_snake_case segments. Flat names score poorly on MCP registries.
+func TestToolNamesUseDotNotation(t *testing.T) {
+	seg := regexp.MustCompile(`^[a-z][a-z0-9_]*$`)
+	for _, tool := range NewRegistry().All() {
+		parts := strings.Split(tool.Name, ".")
+		if len(parts) < 2 || len(parts) > 3 {
+			t.Errorf("%s: expected 2-3 dot-separated segments", tool.Name)
+			continue
+		}
+		for _, p := range parts {
+			if !seg.MatchString(p) {
+				t.Errorf("%s: invalid segment %q", tool.Name, p)
+			}
 		}
 	}
 }

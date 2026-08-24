@@ -11,7 +11,7 @@ import (
 func archivedTools() []Tool {
 	return []Tool{
 		{
-			Name:        "mm_list_archived_mailboxes",
+			Name:        "archived.list",
 			Description: "List the tenant's archived (expired but recoverable) mailboxes.",
 			InputSchema: schema(map[string]any{}),
 			Handler: func(ctx context.Context, args map[string]any, bearer string, gw *gateway.Client) (*Result, error) {
@@ -19,7 +19,7 @@ func archivedTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_get_archived_mailbox",
+			Name:        "archived.get",
 			Description: "Fetch a single archived mailbox by ID.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Archived mailbox ID"),
@@ -33,7 +33,7 @@ func archivedTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_archived_mailbox",
+			Name:        "archived.delete",
 			Description: "Permanently delete an archived mailbox.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Archived mailbox ID"),
@@ -47,7 +47,7 @@ func archivedTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_reactivate_archived_mailbox",
+			Name:        "archived.reactivate",
 			Description: "Reactivate an archived mailbox back to active state.",
 			InputSchema: schema(map[string]any{
 				"mailboxId": str("Archived mailbox ID"),
@@ -74,7 +74,7 @@ func archivedTools() []Tool {
 func domainTools() []Tool {
 	return []Tool{
 		{
-			Name:        "mm_list_domains",
+			Name:        "domains.list",
 			Description: "List the tenant's custom domains with their DNS verification status.",
 			InputSchema: schema(map[string]any{}),
 			Handler: func(ctx context.Context, args map[string]any, bearer string, gw *gateway.Client) (*Result, error) {
@@ -82,7 +82,7 @@ func domainTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_register_domain",
+			Name:        "domains.register",
 			Description: "Register a new custom domain. DNS records (TXT token + MX) must then be added before verification can succeed.",
 			InputSchema: schema(map[string]any{
 				"name": str("Domain name, e.g. mail.example.com"),
@@ -96,7 +96,7 @@ func domainTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_verify_domain",
+			Name:        "domains.verify",
 			Description: "Trigger DNS verification (TXT + MX) of a registered domain.",
 			InputSchema: schema(map[string]any{
 				"domainId": str("Domain ID"),
@@ -110,7 +110,7 @@ func domainTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_domain",
+			Name:        "domains.delete",
 			Description: "Delete a registered custom domain.",
 			InputSchema: schema(map[string]any{
 				"domainId": str("Domain ID"),
@@ -137,7 +137,7 @@ func teamTools() []Tool {
 	}
 	return []Tool{
 		{
-			Name:        "mm_list_members",
+			Name:        "team.members.list",
 			Description: "List the tenant's team members.",
 			InputSchema: schema(map[string]any{}),
 			Handler: func(ctx context.Context, args map[string]any, bearer string, gw *gateway.Client) (*Result, error) {
@@ -145,7 +145,7 @@ func teamTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_add_member",
+			Name:        "team.members.add",
 			Description: "Add a team member directly (no invitation flow).",
 			InputSchema: schema(map[string]any{
 				"user_id":  str("Member user ID"),
@@ -166,7 +166,7 @@ func teamTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_get_member",
+			Name:        "team.members.get",
 			Description: "Fetch a single team member by ID.",
 			InputSchema: schema(map[string]any{
 				"memberId": str("Member ID"),
@@ -176,7 +176,7 @@ func teamTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_member",
+			Name:        "team.members.delete",
 			Description: "Remove a team member.",
 			InputSchema: schema(map[string]any{
 				"memberId": str("Member ID"),
@@ -186,7 +186,7 @@ func teamTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_create_invitation",
+			Name:        "team.invitations.create",
 			Description: "Create a team invitation for an email address (SMTP invite is sent by the team service).",
 			InputSchema: schema(map[string]any{
 				"email": str("Invitee email address"),
@@ -200,7 +200,7 @@ func teamTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_list_invitations",
+			Name:        "team.invitations.list",
 			Description: "List the tenant's team invitations.",
 			InputSchema: schema(map[string]any{}),
 			Handler: func(ctx context.Context, args map[string]any, bearer string, gw *gateway.Client) (*Result, error) {
@@ -208,7 +208,7 @@ func teamTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_invitation",
+			Name:        "team.invitations.delete",
 			Description: "Revoke a team invitation.",
 			InputSchema: schema(map[string]any{
 				"invitationId": str("Invitation ID"),
@@ -228,7 +228,7 @@ func teamTools() []Tool {
 func identityTools() []Tool {
 	return []Tool{
 		{
-			Name:        "mm_list_identities",
+			Name:        "identities.list",
 			Description: "List the tenant's mock identities, optionally filtered by OAuth client or mailbox address.",
 			InputSchema: schema(map[string]any{
 				"clientId":       str("Filter by OAuth client ID. Optional."),
@@ -253,7 +253,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_create_identity",
+			Name:        "identities.create",
 			Description: "Create a mock identity bound to a mailbox for OAuth flow testing.",
 			InputSchema: schema(map[string]any{
 				"clientId":       str("OAuth client ID the identity belongs to"),
@@ -280,7 +280,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_get_identity",
+			Name:        "identities.get",
 			Description: "Fetch a single mock identity by ID.",
 			InputSchema: schema(map[string]any{
 				"identityId": str("Identity ID"),
@@ -294,7 +294,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_identity",
+			Name:        "identities.delete",
 			Description: "Delete a mock identity.",
 			InputSchema: schema(map[string]any{
 				"identityId": str("Identity ID"),
@@ -308,7 +308,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_list_oauth_clients",
+			Name:        "oauth.clients.list",
 			Description: "List the tenant's OAuth clients for mock identity testing.",
 			InputSchema: schema(map[string]any{}),
 			Handler: func(ctx context.Context, args map[string]any, bearer string, gw *gateway.Client) (*Result, error) {
@@ -316,7 +316,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_create_oauth_client",
+			Name:        "oauth.clients.create",
 			Description: "Register an OAuth client for mock identity flows. The plaintext clientSecret is returned once at creation.",
 			InputSchema: schema(map[string]any{
 				"name":          str("Client display name"),
@@ -347,7 +347,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_get_oauth_client",
+			Name:        "oauth.clients.get",
 			Description: "Fetch a single OAuth client by its public client ID.",
 			InputSchema: schema(map[string]any{
 				"clientId": str("Public OAuth client ID"),
@@ -361,7 +361,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_delete_oauth_client",
+			Name:        "oauth.clients.delete",
 			Description: "Delete an OAuth client by its public client ID.",
 			InputSchema: schema(map[string]any{
 				"clientId": str("Public OAuth client ID"),
@@ -375,7 +375,7 @@ func identityTools() []Tool {
 			},
 		},
 		{
-			Name:        "mm_rotate_client_secret",
+			Name:        "oauth.clients.rotate_secret",
 			Description: "Rotate an OAuth client's secret. The new plaintext secret is returned once.",
 			InputSchema: schema(map[string]any{
 				"clientId": str("Public OAuth client ID"),
