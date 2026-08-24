@@ -21,6 +21,10 @@ import (
 // LatestProtocolRevision is the protocol version this server implements.
 const LatestProtocolRevision = "2025-06-18"
 
+// ServerVersion is reported in the initialize handshake's serverInfo. It
+// mirrors the module version; bump it when tagging a release.
+const ServerVersion = "1.1.0"
+
 var supportedRevisions = map[string]bool{
 	"2025-06-18": true,
 	"2025-03-26": true,
@@ -108,6 +112,15 @@ func (s *Server) dispatch(r *http.Request, req *jsonrpc.Request) *jsonrpc.Respon
 		return s.handleToolsList(req)
 	case "tools/call":
 		return s.handleToolsCall(r, req)
+	case "resources/list":
+		// Tools-only server: answer with an empty list rather than
+		// method-not-found so capability probes from clients and registries
+		// don't log warnings.
+		return jsonrpc.NewResult(req.ID, map[string]any{"resources": []any{}})
+	case "prompts/list":
+		return jsonrpc.NewResult(req.ID, map[string]any{"prompts": []any{}})
+	case "resources/templates/list":
+		return jsonrpc.NewResult(req.ID, map[string]any{"resourceTemplates": []any{}})
 	default:
 		return jsonrpc.NewError(req.ID, jsonrpc.CodeMethodNotFound, "method not found: "+req.Method)
 	}
@@ -132,8 +145,8 @@ func (s *Server) handleInitialize(req *jsonrpc.Request) *jsonrpc.Response {
 			},
 		},
 		"serverInfo": map[string]any{
-			"name":    "mcp-server",
-			"version": "0.1.0",
+			"name":    "minutemail-mcp-server",
+			"version": ServerVersion,
 		},
 	})
 }

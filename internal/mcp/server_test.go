@@ -80,11 +80,29 @@ func TestNotificationAcceptedNoBody(t *testing.T) {
 	}
 }
 
+func TestUnsupportedCapabilityReturnsEmptyList(t *testing.T) {
+	srv := newTestServer("http://127.0.0.1:1")
+	defer srv.Close()
+
+	for method, key := range map[string]string{
+		"resources/list":           "resources",
+		"prompts/list":             "prompts",
+		"resources/templates/list": "resourceTemplates",
+	} {
+		_, resp := post(t, srv.URL, `{"jsonrpc":"2.0","id":7,"method":"`+method+`"}`, "")
+		result := resp["result"].(map[string]any)
+		list, ok := result[key].([]any)
+		if !ok || len(list) != 0 {
+			t.Fatalf("%s: expected empty %s list, got: %v", method, key, resp)
+		}
+	}
+}
+
 func TestMethodNotFound(t *testing.T) {
 	srv := newTestServer("http://127.0.0.1:1")
 	defer srv.Close()
 
-	_, resp := post(t, srv.URL, `{"jsonrpc":"2.0","id":7,"method":"resources/list"}`, "")
+	_, resp := post(t, srv.URL, `{"jsonrpc":"2.0","id":7,"method":"sampling/createMessage"}`, "")
 	errObj := resp["error"].(map[string]any)
 	if errObj["code"].(float64) != -32601 {
 		t.Fatalf("error = %v", resp)
