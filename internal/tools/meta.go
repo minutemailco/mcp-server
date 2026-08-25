@@ -217,6 +217,7 @@ var toolMetaTable = map[string]toolMeta{
 	// identities & oauth clients
 	"identities.list":             ro("List identities", outList(outIdentity)),
 	"identities.create":           create("Create identity", outIdentity),
+	"identities.update":           create("Update identity", outIdentity),
 	"identities.get":              ro("Get identity", outIdentity),
 	"identities.delete":           del("Delete identity", outStatus()),
 	"oauth.clients.list":          ro("List OAuth clients", outClientsList),

@@ -122,9 +122,12 @@ Bearer API key; write operations require the matching scope (`mailboxes`,
 `team.invitations.create`, `team.invitations.list`, `team.invitations.delete`.
 
 ### Mock identities & OAuth clients (`identities` scope)
-`identities.list`, `identities.create`, `identities.get`,
+`identities.list`, `identities.create`, `identities.update`, `identities.get`,
 `identities.delete`, `oauth.clients.list`, `oauth.clients.create`,
 `oauth.clients.get`, `oauth.clients.delete`, `oauth.clients.rotate_secret`.
+`identities.update` patches profile fields, `isActive` (activate/deactivate),
+`emailVerified` (drives the `email_verified` claim), and custom `claims`
+merged into issued ID tokens and userinfo responses.
 
 Tool results are returned as MCP text content carrying the API's JSON
 response. Non-2xx responses become `isError: true` results with the HTTP

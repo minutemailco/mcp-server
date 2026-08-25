@@ -294,6 +294,59 @@ func identityTools() []Tool {
 			},
 		},
 		{
+			Name:        "identities.update",
+			Description: "Update a mock identity: profile fields, isActive (activate/deactivate), emailVerified, and custom claims merged into the ID token and userinfo.",
+			InputSchema: schema(map[string]any{
+				"identityId":    str("Identity ID"),
+				"username":      str("Identity username. Optional."),
+				"name":          str("Display name. Optional."),
+				"avatarUrl":     str("Avatar URL. Optional."),
+				"isActive":      boolean("Whether the identity can be used in OAuth flows. Optional."),
+				"emailVerified": boolean("Value of the email_verified claim issued for this identity. Optional."),
+				"claims": map[string]any{
+					"type":                 "object",
+					"description":          "Custom claims (e.g. role, plan) merged into the ID token and userinfo. Replaces existing claims. Reserved claim names are rejected. Optional.",
+					"additionalProperties": map[string]any{"type": "string"},
+				},
+			}, "identityId"),
+			Handler: func(ctx context.Context, args map[string]any, bearer string, gw *gateway.Client) (*Result, error) {
+				id, err := argString(args, "identityId")
+				if err != nil {
+					return nil, err
+				}
+				body := map[string]any{}
+				for _, name := range []string{"username", "name", "avatarUrl"} {
+					if v := argStringOpt(args, name); v != "" {
+						body[name] = v
+					}
+				}
+				for _, name := range []string{"isActive", "emailVerified"} {
+					if v, ok := argBoolOpt(args, name); ok {
+						body[name] = v
+					}
+				}
+				if v, ok := args["claims"]; ok && v != nil {
+					raw, ok := v.(map[string]any)
+					if !ok {
+						return nil, fmt.Errorf("argument %q must be an object of string values", "claims")
+					}
+					claims := make(map[string]string, len(raw))
+					for k, item := range raw {
+						s, ok := item.(string)
+						if !ok {
+							return nil, fmt.Errorf("argument %q must contain only string values (key %q is not a string)", "claims", k)
+						}
+						claims[k] = s
+					}
+					body["claims"] = claims
+				}
+				if len(body) == 0 {
+					return nil, fmt.Errorf("provide at least one field to update")
+				}
+				return callJSON(ctx, gw, "PATCH", path("v1", "identities", id), body, bearer)
+			},
+		},
+		{
 			Name:        "identities.delete",
 			Description: "Delete a mock identity.",
 			InputSchema: schema(map[string]any{
