@@ -261,6 +261,12 @@ func identityTools() []Tool {
 				"username":       str("Identity username. Optional."),
 				"name":           str("Display name. Optional."),
 				"avatarUrl":      str("Avatar URL. Optional."),
+				"emailVerified":  boolean("Value of the email_verified claim issued for this identity. Optional."),
+				"claims": map[string]any{
+					"type":                 "object",
+					"description":          "Custom claims (e.g. role, plan) merged into the ID token and userinfo. Custom-provider clients only — rejected for google/github/apple/facebook. Optional.",
+					"additionalProperties": map[string]any{"type": "string"},
+				},
 			}, "clientId", "mailboxAddress"),
 			Handler: func(ctx context.Context, args map[string]any, bearer string, gw *gateway.Client) (*Result, error) {
 				body := map[string]any{}
@@ -275,6 +281,24 @@ func identityTools() []Tool {
 					if v := argStringOpt(args, name); v != "" {
 						body[name] = v
 					}
+				}
+				if v, ok := argBoolOpt(args, "emailVerified"); ok {
+					body["emailVerified"] = v
+				}
+				if v, ok := args["claims"]; ok && v != nil {
+					raw, ok := v.(map[string]any)
+					if !ok {
+						return nil, fmt.Errorf("argument %q must be an object of string values", "claims")
+					}
+					claims := make(map[string]string, len(raw))
+					for k, item := range raw {
+						s, ok := item.(string)
+						if !ok {
+							return nil, fmt.Errorf("argument %q must contain only string values (key %q is not a string)", "claims", k)
+						}
+						claims[k] = s
+					}
+					body["claims"] = claims
 				}
 				return callJSON(ctx, gw, "POST", "/v1/identities", body, bearer)
 			},
