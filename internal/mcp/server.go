@@ -222,12 +222,40 @@ func (s *Server) handleToolsCall(r *http.Request, req *jsonrpc.Request) *jsonrpc
 		callResult = metrics.ResultError
 	}
 	metrics.ToolCallsTotal.WithLabelValues(tool.Name, callResult).Inc()
-	return jsonrpc.NewResult(req.ID, map[string]any{
+	resultBody := map[string]any{
 		"content": []map[string]any{
 			{"type": "text", "text": result.Text},
 		},
 		"isError": result.IsError,
-	})
+	}
+	if !result.IsError {
+		// Every tool declares an outputSchema, so successful results must
+		// carry structuredContent; strict clients (n8n, the reference SDKs)
+		// reject them with JSON-RPC -32600 otherwise. The text block above
+		// mirrors the payload for backwards compatibility.
+		resultBody["structuredContent"] = structuredContent(result.Text)
+	}
+	return jsonrpc.NewResult(req.ID, resultBody)
+}
+
+// structuredContent derives the structuredContent value from a successful
+// result's text payload. Object payloads pass through unchanged, arrays are
+// wrapped in the {"items": ...} envelope the list output schemas declare, and
+// anything else (which the verified gateway envelopes rule out in practice) is
+// wrapped under "result" so structuredContent is always present on success.
+func structuredContent(text string) map[string]any {
+	var v any
+	if err := json.Unmarshal([]byte(text), &v); err != nil {
+		return map[string]any{"result": text}
+	}
+	switch t := v.(type) {
+	case map[string]any:
+		return t
+	case []any:
+		return map[string]any{"items": t}
+	default:
+		return map[string]any{"result": v}
+	}
 }
 
 func toolErrorResult(id json.RawMessage, message string) *jsonrpc.Response {

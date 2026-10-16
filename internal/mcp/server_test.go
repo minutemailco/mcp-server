@@ -192,6 +192,87 @@ func TestToolsCallProxiesToGateway(t *testing.T) {
 	}
 }
 
+func TestToolsCallReturnsStructuredContent(t *testing.T) {
+	gw := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		_, _ = w.Write([]byte(`{"id":"mb1","address":"a@minutemail.cc","domain":"minutemail.cc","alias":"a","messageCount":0,"permanent":false,"recoverable":false}`))
+	}))
+	defer gw.Close()
+
+	srv := newTestServer(gw.URL)
+	defer srv.Close()
+
+	_, resp := post(t, srv.URL,
+		`{"jsonrpc":"2.0","id":10,"method":"tools/call","params":{"name":"mailboxes.create","arguments":{}}}`,
+		"Bearer mmak_test")
+	result := resp["result"].(map[string]any)
+	if result["isError"] == true {
+		t.Fatalf("unexpected error result: %v", resp)
+	}
+
+	// MCP clients (e.g. n8n) reject successful results of tools with an
+	// outputSchema that carry no structuredContent (JSON-RPC -32600).
+	structured, ok := result["structuredContent"].(map[string]any)
+	if !ok {
+		t.Fatalf("missing structuredContent: %v", resp)
+	}
+	if structured["id"] != "mb1" || structured["address"] != "a@minutemail.cc" {
+		t.Fatalf("structuredContent = %v", structured)
+	}
+
+	// Text content mirrors the structured payload for backwards compatibility.
+	content := result["content"].([]any)[0].(map[string]any)
+	if !strings.Contains(content["text"].(string), `"mb1"`) {
+		t.Fatalf("unexpected content: %v", content)
+	}
+}
+
+func TestToolsCallStructuredContentEmptyBody(t *testing.T) {
+	gw := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+	}))
+	defer gw.Close()
+
+	srv := newTestServer(gw.URL)
+	defer srv.Close()
+
+	_, resp := post(t, srv.URL,
+		`{"jsonrpc":"2.0","id":11,"method":"tools/call","params":{"name":"mailboxes.delete","arguments":{"mailboxId":"mb1"}}}`,
+		"Bearer mmak_test")
+	result := resp["result"].(map[string]any)
+	if result["isError"] == true {
+		t.Fatalf("unexpected error result: %v", resp)
+	}
+	structured, ok := result["structuredContent"].(map[string]any)
+	if !ok {
+		t.Fatalf("missing structuredContent: %v", resp)
+	}
+	if structured["status"] != "ok" {
+		t.Fatalf("structuredContent = %v", structured)
+	}
+}
+
+func TestToolsCallErrorResultHasNoStructuredContent(t *testing.T) {
+	gw := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer gw.Close()
+
+	srv := newTestServer(gw.URL)
+	defer srv.Close()
+
+	_, resp := post(t, srv.URL,
+		`{"jsonrpc":"2.0","id":12,"method":"tools/call","params":{"name":"mailboxes.list","arguments":{}}}`,
+		"Bearer mmak_test")
+	result := resp["result"].(map[string]any)
+	if result["isError"] != true {
+		t.Fatalf("expected isError: %v", resp)
+	}
+	if _, ok := result["structuredContent"]; ok {
+		t.Fatalf("error results should stay text-only: %v", resp)
+	}
+}
+
 func TestToolsCallGatewayError(t *testing.T) {
 	gw := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusTooManyRequests)

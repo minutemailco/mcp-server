@@ -10,11 +10,12 @@ package tools
 //   - delete tools: destructive
 //   - create/verify/rotate tools: mutating, non-destructive
 //
-// Output schemas describe the JSON payload returned in the tool result's text
-// content — the MinuteMail API response echoed by the gateway. Envelopes were
-// verified against the live API: list endpoints return {"items":[...]} (oauth
-// clients: {"clients":[...]}) and empty-body responses are reported as
-// {"status":"ok","http_status":<n>}.
+// Output schemas describe the JSON payload returned as the tool result's
+// structuredContent (the spec-mandated counterpart of the text content, which
+// echoes the same payload) — the MinuteMail API response echoed by the
+// gateway. Envelopes were verified against the live API: list endpoints return
+// {"items":[...]} (oauth clients: {"clients":[...]}) and empty-body responses
+// are reported as {"status":"ok","http_status":<n>}.
 
 // toolMeta carries per-tool metadata applied at registry build time.
 type toolMeta struct {
