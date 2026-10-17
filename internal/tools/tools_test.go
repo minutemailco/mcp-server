@@ -176,6 +176,64 @@ func TestAllToolsHaveMeta(t *testing.T) {
 	}
 }
 
+// TestMailboxSchemaAllowsNullExpiresAt pins that mailbox output schemas accept
+// expiresAt: null. Permanent mailboxes return expiresAt: null, and strict
+// clients (n8n, the MCP SDKs) validate structuredContent against this schema —
+// a bare "string" type makes every permanent-mailbox tool call fail with
+// -32602 "data/expiresAt must be string".
+func TestMailboxSchemaAllowsNullExpiresAt(t *testing.T) {
+	// Tools whose results are mailbox objects (others, like mailboxes.delete,
+	// return the status envelope and carry no expiresAt).
+	mustDeclare := map[string]bool{
+		"mailboxes.list": true, "mailboxes.create": true, "mailboxes.get": true,
+		"archived.list": true, "archived.get": true, "archived.reactivate": true,
+	}
+	reg := NewRegistry()
+	for _, tool := range reg.All() {
+		if !mustDeclare[tool.Name] {
+			continue
+		}
+		checked := 0
+		var walk func(s map[string]any)
+		walk = func(s map[string]any) {
+			if items, ok := s["items"].(map[string]any); ok {
+				walk(items)
+			}
+			props, ok := s["properties"].(map[string]any)
+			if !ok {
+				return
+			}
+			exp, ok := props["expiresAt"].(map[string]any)
+			if ok {
+				checked++
+				types, ok := exp["type"].([]string)
+				if !ok {
+					t.Errorf("%s: expiresAt type must be a JSON type array, got %T", tool.Name, exp["type"])
+				} else {
+					allowed := false
+					for _, ty := range types {
+						if ty == "null" {
+							allowed = true
+						}
+					}
+					if !allowed {
+						t.Errorf("%s: expiresAt must allow null (permanent mailboxes)", tool.Name)
+					}
+				}
+			}
+			for _, p := range props {
+				if pm, ok := p.(map[string]any); ok {
+					walk(pm)
+				}
+			}
+		}
+		walk(tool.OutputSchema)
+		if checked == 0 {
+			t.Errorf("%s: no expiresAt property found in outputSchema", tool.Name)
+		}
+	}
+}
+
 // TestMetaTableCoversAllTools fails on stale entries in toolMetaTable.
 func TestMetaTableCoversAllTools(t *testing.T) {
 	reg := NewRegistry()

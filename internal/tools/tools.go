@@ -83,6 +83,13 @@ func str(desc string) map[string]any {
 	return map[string]any{"type": "string", "description": desc}
 }
 
+// strNullable is str for fields the API returns as JSON null in some states
+// (permanent mailboxes have expiresAt: null). Output schemas must allow null
+// or schema-validating clients reject the tool result.
+func strNullable(desc string) map[string]any {
+	return map[string]any{"type": []string{"string", "null"}, "description": desc}
+}
+
 func strEnum(desc string, values ...string) map[string]any {
 	vals := make([]any, len(values))
 	for i, v := range values {

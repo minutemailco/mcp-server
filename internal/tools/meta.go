@@ -98,7 +98,7 @@ var (
 		"owner":        str("Owner (tenant) ID"),
 		"recoverable":  boolean("Whether the mailbox can be recovered after expiry"),
 		"messageCount": integer("Number of mails in the mailbox"),
-		"expiresAt":    str("Expiry timestamp (RFC 3339); null when permanent"),
+		"expiresAt":    strNullable("Expiry timestamp (RFC 3339); null when permanent"),
 		"permanent":    boolean("Whether the mailbox never expires"),
 		"createdAt":    str("Creation timestamp (RFC 3339)"),
 	}, "id", "address")
